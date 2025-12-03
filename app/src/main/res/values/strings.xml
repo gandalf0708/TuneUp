@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">TuneUp</string>
+    <string name="title_activity_signup">Signup</string>
 </resources>
