@@ -15,9 +15,8 @@
 
         <!-- הפעילות הראשית (מסך ההתחברות) -->
         <activity
-            android:name="LoginActivity"
-            android:exported="true"
-            android:label="התחברות">
+            android:name=".LoginActivity"
+            android:exported="true">
 
             <!-- זה אומר לאנדרואיד: התחל מכאן! -->
             <intent-filter>
@@ -28,12 +27,7 @@
 
         <!-- פעילות ההרשמה -->
         <activity
-            android:name="SignupActivity"
-            android:exported="false"
-            android:label="הרשמה"/>
-
-        <!-- אם יש לך גם מסך בית ראשי, הוסף אותו כאן -->
-        <!-- <activity android:name=".MainActivity" android:exported="false" /> -->
-
+            android:name=".SignupActivity"
+            android:exported="false" />
     </application>
 </manifest>

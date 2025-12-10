@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:background="@color/background_dark"
     android:fillViewport="true"
-    tools:context="SignupActivity"> <!-- התיקון נמצא כאן -->
+    tools:context=".SignupActivity"> <!-- התיקון נמצא כאן -->
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
