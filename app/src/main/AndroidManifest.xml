@@ -12,7 +12,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.TuneUp"
         tools:targetApi="31">
-
+        <activity
+            android:name=".HomeActivity"
+            android:exported="false" />
         <!-- הפעילות הראשית (מסך ההתחברות) -->
         <activity
             android:name=".LoginActivity"
@@ -21,13 +23,13 @@
             <!-- זה אומר לאנדרואיד: התחל מכאן! -->
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity>
-
-        <!-- פעילות ההרשמה -->
+        </activity> <!-- פעילות ההרשמה -->
         <activity
             android:name=".SignupActivity"
             android:exported="false" />
     </application>
+
 </manifest>

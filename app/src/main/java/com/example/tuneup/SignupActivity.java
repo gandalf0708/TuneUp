@@ -1,55 +1,78 @@
 package com.example.tuneup;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
+import android.util.Patterns;
 import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 // 1. ייבוא של קלאס ה-Binding שנוצר אוטומטית עבור ה-Layout של ההרשמה
 import com.example.tuneup.databinding.ActivitySignupBinding;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 public class SignupActivity extends AppCompatActivity {
 
-    // 2. הגדרת משתנה עבור אובייקט ה-Binding
-    private ActivitySignupBinding binding;
+    private FirebaseAuth mAuth;
+
+    Button signUpBtn      ;
+    EditText etEmailSignup;
+    TextView tvLoginPrompt;
+    EditText etFullName;
+    EditText etPasswordSignup;
+    EditText etConfirmPassword;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // 3. "ניפוח" (Inflate) של ה-Layout באמצעות View Binding
-        binding = ActivitySignupBinding.inflate(getLayoutInflater());
-
         // 4. הגדרת התצוגה הראשית לשורש (root) של ה-Layout המנופח
-        setContentView(binding.getRoot());
-
-        // 5. הגדרת מאזין ללחיצה על כפתור ההרשמה
-        binding.btnSignup.setOnClickListener(new View.OnClickListener() {
+        setContentView(R.layout.activity_signup);
+        mAuth = FirebaseAuth.getInstance();
+        etFullName= findViewById(R.id.etFullName);
+        etEmailSignup= findViewById(R.id.etEmailSignup);
+        etPasswordSignup= findViewById(R.id.etPasswordSignup);
+        etConfirmPassword= findViewById(R.id.etConfirmPassword);
+        tvLoginPrompt= findViewById(R.id.tvLoginPrompt);
+        tvLoginPrompt.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d("SignupActivity", "tvLoginPrompt clicked");
+                //Intent to SignupActivity
+                Intent intent = new Intent(SignupActivity.this, LoginActivity.class);
+                startActivity(intent);
+                finish();
+            }
+            });
+        signUpBtn = findViewById(R.id.btnSignup);
+        signUpBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 handleSignup();
             }
         });
-
-        // 6. הגדרת מאזין לחזרה למסך ההתחברות
-        binding.tvLoginPrompt.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // סוגר את מסך ההרשמה הנוכחי וחוזר למסך הקודם (מסך ההתחברות)
-                finish();
-            }
-        });
+    }
+    private void goToHomeActivity() {
+        Intent intent = new Intent(this, HomeActivity.class);
+        startActivity(intent);
+        finish();
     }
 
     /**
      * פונקציה המטפלת בלוגיקת ההרשמה
      */
     private void handleSignup() {
-        // הגישה לטקסט מהשדות מתבצעת דרך אובייקט ה-binding
-        String fullName = binding.etFullName.getText().toString().trim();
-        String email = binding.etEmailSignup.getText().toString().trim();
-        String password = binding.etPasswordSignup.getText().toString().trim();
-        String confirmPassword = binding.etConfirmPassword.getText().toString().trim();
+        // הגישה לטקסט מהשדות-
+        String fullName = etFullName.getText().toString().trim();
+        String email =etEmailSignup.getText().toString().trim();
+        String password = etPasswordSignup.getText().toString().trim();
+        String confirmPassword = etConfirmPassword.getText().toString().trim();
 
         // בדיקה שכל השדות מלאים
         if (fullName.isEmpty() || email.isEmpty() || password.isEmpty() || confirmPassword.isEmpty()) {
@@ -57,23 +80,39 @@ public class SignupActivity extends AppCompatActivity {
             return;
         }
 
-        // בדיקה שהסיסמאות תואמות
+        // בדיקה שהסיסמאות תוא מות
         if (!password.equals(confirmPassword)) {
             Toast.makeText(this, "הסיסמאות אינן תואמות.", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        // אם כל הבדיקות עברו, הצג הודעת הצלחה (או בצע את לוגיקת ההרשמה מול שרת)
-        Toast.makeText(this, "מנסה להירשם עם אימייל: " + email, Toast.LENGTH_LONG).show();
+        boolean isValidEmail = isValidEmail(email);
+        if (!isValidEmail) {
+            Toast.makeText(this, "אימייל לא תקין.", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
-        // --- כאן יבוא קוד ההרשמה. לאחר הרשמה מוצלחת, אפשר לעבור למסך הראשי או להתחברות ---
-        // finish(); // חזרה למסך ההתחברות כדי שהמשתמש יתחבר
+        signUpUser(email,password);
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        // שחרור ה-binding כדי למנוע דליפות זיכרון
-        binding = null;
+    private boolean isValidEmail(String email) {
+        return email != null && Patterns.EMAIL_ADDRESS.matcher(email).matches();
+    }
+
+    private void signUpUser(String email, String password) {
+        mAuth.createUserWithEmailAndPassword(email, password)
+                .addOnCompleteListener(this, task -> {
+                    if (task.isSuccessful()) {
+                        // הצלחה: המשתמש נוסף למערכת
+                        FirebaseUser user = mAuth.getCurrentUser();
+                        Toast.makeText(this, "הרשמה הצליחה!", Toast.LENGTH_SHORT).show();
+                        // כאן אפשר לעבור למסך הבית
+                        goToHomeActivity();
+                    } else {
+                        // כישלון: הצגת הודעה למשתמש (למשל, פורמט אימייל לא תקין או סיסמה קצרה מדי)
+                        Toast.makeText(this, "שגיאה: " + task.getException().getMessage(),
+                                Toast.LENGTH_LONG).show();
+                    }
+                });
     }
 }
