@@ -90,25 +90,25 @@ public class LoginActivity extends AppCompatActivity {
         return email != null && Patterns.EMAIL_ADDRESS.matcher(email).matches();
     }
 
-    private void loginUser(String email, String password) {
+private void loginUser(String email, String password) {
 
 
-        mAuth.signInWithEmailAndPassword(email, password)
-                .addOnCompleteListener(this, task -> {
-                    if (task.isSuccessful()) {
-                        // התחברות הצליחה
-                        FirebaseUser user = mAuth.getCurrentUser();
-                        Toast.makeText(this, "ברוך הבא!", Toast.LENGTH_SHORT).show();
+    mAuth.signInWithEmailAndPassword(email, password)
+            .addOnCompleteListener(this, task -> {
+                if (task.isSuccessful()) {
+                    // התחברות הצליחה
+                    FirebaseUser user = mAuth.getCurrentUser();
+                    Toast.makeText(this, "ברוך הבא!", Toast.LENGTH_SHORT).show();
 
-                        // מעבר למסך הראשי
-                        goToHomeActivity();
-                    } else {
-                        // התחברות נכשלה (למשל: סיסמה שגויה או משתמש לא קיים)
-                        Toast.makeText(this, "שגיאה: " + task.getException().getMessage(),
-                                Toast.LENGTH_LONG).show();
-                    }
-                });
-    }
+                    // מעבר למסך הראשי
+                    goToHomeActivity();
+                } else {
+                    // התחברות נכשלה (למשל: סיסמה שגויה או משתמש לא קיים)
+                    Toast.makeText(this, "שגיאה: " + task.getException().getMessage(),
+                            Toast.LENGTH_LONG).show();
+                }
+            });
+}
 
 }
 
